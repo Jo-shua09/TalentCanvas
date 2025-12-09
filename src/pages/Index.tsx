@@ -24,6 +24,7 @@ const Index = () => {
           content="Connect top tech talent with dream opportunities. Our AI-driven platform matches candidates with perfect-fit roles while providing actionable feedback to accelerate career growth."
         />
       </Helmet>
+
       <div className="min-h-screen bg-background">
         <Header />
 

@@ -1,0 +1,2 @@
+- [ ] Import HelmetProvider from "react-helmet-async" in src/routes/AppRouter.tsx
+- [ ] Wrap the existing providers with HelmetProvider
