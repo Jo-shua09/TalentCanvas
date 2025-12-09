@@ -14,6 +14,13 @@ import { cn } from "@/lib/utils";
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>About Us - TalentCanvas</title>
+        <meta
+          name="description"
+          content="Learn about TalentCanvas, the AI-powered tech recruitment platform revolutionizing how companies find top talent and candidates discover their dream jobs."
+        />
+      </Helmet>
       <Header />
 
       {/* Hero Section */}

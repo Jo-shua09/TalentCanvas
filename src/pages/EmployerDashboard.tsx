@@ -112,6 +112,13 @@ const EmployerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title>Employer Dashboard - TalentCanvas</title>
+        <meta
+          name="description"
+          content="Manage your job postings, find top talent, and track hiring progress with TalentCanvas employer dashboard."
+        />
+      </Helmet>
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">

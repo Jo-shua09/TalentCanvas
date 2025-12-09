@@ -8,7 +8,7 @@ const Loader = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/onboarding");
-    }, 2000); // 2 second delay
+    }, 3000); // 3 second delay
 
     return () => clearTimeout(timer);
   }, [navigate]);
