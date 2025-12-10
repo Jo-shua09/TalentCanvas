@@ -2,15 +2,64 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles, CheckCircle2, SkipForward } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { slides } from "@/assets/data/onboarding";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import logo from "@/assets/images/logo.png";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Onboarding = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+    }),
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 },
+    },
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.5 },
+    },
+  };
 
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
@@ -30,6 +79,10 @@ const Onboarding = () => {
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
+  };
+
+  const skipToLastSlide = () => {
+    setCurrentSlide(slides.length - 1);
   };
 
   const currentSlideData = slides[currentSlide];
@@ -54,73 +107,141 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-12">
+    <motion.div
+      className="min-h-screen bg-background flex items-center justify-center p-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <div className="w-full max-w-6xl flex relative flex-col md:flex-row gap-12">
         <div className="flex-[2]">
-          <Card className="border shadow-xl">
-            <CardContent className="p-8 md:p-8">
-              {/* Progress Indicator */}
-              <div className="flex justify-center mb-12">
-                <div className="flex gap-2">
-                  {slides.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentSlide ? "bg-primary scale-125" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Slide Content */}
-              <div className="text-center mb-8">
-                <div className="flex justify-center items-center mb-4">
-                  <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
-                </div>
-
-                <Badge className="mb-4 gradient-primary text-primary-foreground border-0 px-4 py-2">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {currentSlideData.subtitle}
-                </Badge>
-
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">{currentSlideData.title}</h1>
-                <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">{currentSlideData.description}</p>
-              </div>
-
-              {/* Features */}
-              <div className="flex flex-wrap justify-center gap-4 mb-8">
-                {currentSlideData.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{feature}</span>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}>
+            <Card className="border shadow-xl">
+              <CardContent className="p-8 md:p-8">
+                {/* Progress Indicator */}
+                <motion.div className="flex justify-center mb-12" variants={itemVariants}>
+                  <div className="flex gap-2">
+                    {slides.map((_, index) => (
+                      <motion.button
+                        key={index}
+                        onClick={() => goToSlide(index)}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          index === currentSlide ? "bg-primary scale-125" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                        }`}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </motion.div>
 
-              {/* Navigation */}
-              <div className="flex justify-between items-center mt-10">
-                <Button variant="outline" onClick={prevSlide} disabled={currentSlide === 0} className="flex items-center gap-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  Previous
-                </Button>
+                {/* Slide Content */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentSlide}
+                    className="text-center mb-8"
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                      x: { type: "spring", stiffness: 300, damping: 30 },
+                      opacity: { duration: 0.3 },
+                    }}
+                  >
+                    <motion.div className="flex justify-center items-center mb-4" variants={itemVariants}>
+                      <motion.img
+                        src={logo}
+                        alt="Logo image"
+                        loading="lazy"
+                        className="h-24 object-contain"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                      />
+                    </motion.div>
 
-                <Button
-                  onClick={nextSlide}
-                  className={`flex items-center gap-2 ${currentSlide === slides.length - 1 ? "gradient-primary border-0" : ""}`}
-                >
-                  {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                    <motion.div variants={itemVariants}>
+                      <Badge className="mb-4 gradient-primary text-primary-foreground border-0 px-4 py-2">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {currentSlideData.subtitle}
+                      </Badge>
+                    </motion.div>
+
+                    <motion.h1 className="text-3xl md:text-4xl font-bold mb-4" variants={itemVariants}>
+                      {currentSlideData.title}
+                    </motion.h1>
+                    <motion.p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed" variants={itemVariants}>
+                      {currentSlideData.description}
+                    </motion.p>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Features */}
+                <motion.div className="flex flex-wrap justify-center gap-4 mb-8" variants={itemVariants}>
+                  {currentSlideData.features.map((feature, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">{feature}</span>
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* Navigation */}
+                <motion.div className="flex justify-between items-center mt-10" variants={buttonVariants}>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="outline" onClick={prevSlide} disabled={currentSlide === 0} className="flex items-center gap-2">
+                      <ArrowLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                  </motion.div>
+
+                  <div className="flex gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        onClick={nextSlide}
+                        className={`flex items-center gap-2 ${currentSlide === slides.length - 1 ? "gradient-primary border-0" : ""}`}
+                      >
+                        {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
+
+        <motion.div
+          className="absolute top-2 right-2 md:top-0 md:right-0"
+          onClick={skipToLastSlide}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          {currentSlide !== slides.length - 1 && (
+            <motion.div
+              className="font-medium text-sm font-heading cursor-pointer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              Skip
+            </motion.div>
+          )}
+        </motion.div>
 
         <SlideAnimations />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
