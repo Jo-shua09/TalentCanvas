@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { containerVariants, itemVariants, badgeVariants, cardVariants, buttonVariants } from "@/lib/animations";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -50,8 +52,20 @@ const Contact = () => {
     },
   ];
 
+  const faqs = [
+    {
+      q: "How does the AI matching work?",
+      a: "Our AI analyzes your skills, experience, and preferences to find roles with the highest compatibility.",
+    },
+    { q: "Is TalentCanvas free for candidates?", a: "Yes! Job seekers can use all features completely free of charge." },
+    {
+      q: "How do I get feedback on my applications?",
+      a: "Employers provide feedback through our platform, and you'll receive notifications when feedback is available.",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div className="min-h-screen bg-background" initial="hidden" animate="visible" variants={containerVariants}>
       <Helmet>
         <title>Contact Us - TalentCanvas</title>
         <meta
@@ -62,8 +76,7 @@ const Contact = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="gradient-hero relative py-12 md:py-20 lg:py-12 px-4  overflow-hidden">
-        {/* Background decoration */}
+      <section className="gradient-hero relative py-12 md:py-20 lg:py-12 px-4 overflow-hidden">
         <div
           className={cn(
             "absolute inset-0",
@@ -72,168 +85,173 @@ const Contact = () => {
             "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]"
           )}
         />
-
         <div className="md:container px-4 mx-auto relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-6 gradient-primary text-primary-foreground border-0 px-4 py-2">Contact Us</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">Get in Touch</h1>
-            <p className="text-xl text-muted-foreground">
+            <motion.div variants={badgeVariants}>
+              <Badge className="mb-6 gradient-primary text-primary-foreground border-0 px-4 py-2">Contact Us</Badge>
+            </motion.div>
+            <motion.h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3" variants={itemVariants}>
+              Get in Touch
+            </motion.h1>
+            <motion.p className="text-xl text-muted-foreground" variants={itemVariants}>
               Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-            </p>
+            </motion.p>
           </div>
         </div>
       </section>
 
       {/* Contact Info Cards */}
-      <section className="py-12 px-4">
+      <motion.section className="py-12 px-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
-            {contactInfo.map((info) => (
-              <Card key={info.title} className="text-center hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <info.icon className="h-7 w-7 text-primary-foreground" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">{info.title}</h3>
-                  <p className="text-foreground font-medium">{info.description}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{info.subtitle}</p>
-                </CardContent>
-              </Card>
+          <motion.div className="grid md:grid-cols-3 gap-6" variants={containerVariants}>
+            {contactInfo.map((info, index) => (
+              <motion.div key={info.title} variants={cardVariants} custom={index}>
+                <Card className="text-center hover:shadow-lg transition-shadow">
+                  <CardContent className="pt-6">
+                    <div className="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <info.icon className="h-7 w-7 text-primary-foreground" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">{info.title}</h3>
+                    <p className="text-foreground font-medium">{info.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{info.subtitle}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Contact Form Section */}
-      <section className="py-12 px-4">
+      <motion.section className="py-12 px-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
         <div className="container mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
+          <motion.div className="grid lg:grid-cols-2 gap-8" variants={containerVariants}>
             {/* Form */}
-            <Card className="h-fit">
-              <CardHeader>
-                <CardTitle className="text-2xl">Send Us a Message</CardTitle>
-                <CardDescription>Fill out the form below and we'll get back to you shortly.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Your Name</label>
-                      <Input
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Email Address</label>
-                      <Input
-                        type="email"
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Subject</label>
-                    <Input
-                      placeholder="How can we help?"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Message</label>
-                    <Textarea
-                      placeholder="Tell us more about your inquiry..."
-                      className="min-h-[150px]"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full gradient-primary border-0" size="lg">
-                    <Send className="h-5 w-5 mr-2" />
-                    Send Message
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* FAQ & Support */}
-            <div className="space-y-6">
-              <Card className="bg-muted/50">
+            <motion.div variants={cardVariants}>
+              <Card className="h-fit">
                 <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center">
-                      <Headphones className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <CardTitle>Need Immediate Help?</CardTitle>
-                      <CardDescription>Our support team is here for you</CardDescription>
-                    </div>
-                  </div>
+                  <CardTitle className="text-2xl">Send Us a Message</CardTitle>
+                  <CardDescription>Fill out the form below and we'll get back to you shortly.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    For urgent inquiries, you can reach our support team directly via live chat or phone during business hours.
-                  </p>
-                  <Button variant="outline" className="w-full">
-                    <MessageSquare className="h-5 w-5 mr-2" />
-                    Start Live Chat
-                  </Button>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <motion.div className="grid md:grid-cols-2 gap-4" variants={itemVariants}>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Your Name</label>
+                        <Input
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Email Address</label>
+                        <Input
+                          type="email"
+                          placeholder="john@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </motion.div>
+                    <motion.div variants={itemVariants}>
+                      <label className="block text-sm font-medium mb-2">Subject</label>
+                      <Input
+                        placeholder="How can we help?"
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        required
+                      />
+                    </motion.div>
+                    <motion.div variants={itemVariants}>
+                      <label className="block text-sm font-medium mb-2">Message</label>
+                      <Textarea
+                        placeholder="Tell us more about your inquiry..."
+                        className="min-h-[150px]"
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        required
+                      />
+                    </motion.div>
+                    <motion.div variants={buttonVariants}>
+                      <Button type="submit" className="w-full gradient-primary border-0" size="lg">
+                        <Send className="h-5 w-5 mr-2" />
+                        Send Message
+                      </Button>
+                    </motion.div>
+                  </form>
                 </CardContent>
               </Card>
+            </motion.div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Frequently Asked Questions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {[
-                    {
-                      q: "How does the AI matching work?",
-                      a: "Our AI analyzes your skills, experience, and preferences to find roles with the highest compatibility.",
-                    },
-                    { q: "Is TalentCanvas free for candidates?", a: "Yes! Job seekers can use all features completely free of charge." },
-                    {
-                      q: "How do I get feedback on my applications?",
-                      a: "Employers provide feedback through our platform, and you'll receive notifications when feedback is available.",
-                    },
-                  ].map((faq, index) => (
-                    <div key={index} className="border-b pb-4 last:border-0">
-                      <h4 className="font-semibold mb-2">{faq.q}</h4>
-                      <p className="text-sm text-muted-foreground">{faq.a}</p>
+            {/* FAQ & Support */}
+            <motion.div className="space-y-6" variants={containerVariants}>
+              <motion.div variants={cardVariants}>
+                <Card className="bg-muted/50">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center">
+                        <Headphones className="h-6 w-6 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <CardTitle>Need Immediate Help?</CardTitle>
+                        <CardDescription>Our support team is here for you</CardDescription>
+                      </div>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4">
+                      For urgent inquiries, you can reach our support team directly via live chat or phone during business hours.
+                    </p>
+                    <Button variant="outline" className="w-full">
+                      <MessageSquare className="h-5 w-5 mr-2" />
+                      Start Live Chat
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card className="border-primary/20 bg-primary/5">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Clock className="h-6 w-6 text-primary" />
-                    <div>
-                      <p className="font-semibold">Response Time</p>
-                      <p className="text-sm text-muted-foreground">Average response within 4 hours</p>
+              <motion.div variants={cardVariants}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Frequently Asked Questions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {faqs.map((faq, index) => (
+                      <motion.div key={index} className="border-b pb-4 last:border-0" variants={itemVariants} custom={index}>
+                        <h4 className="font-semibold mb-2">{faq.q}</h4>
+                        <p className="text-sm text-muted-foreground">{faq.a}</p>
+                      </motion.div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={cardVariants}>
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Clock className="h-6 w-6 text-primary" />
+                      <div>
+                        <p className="font-semibold">Response Time</p>
+                        <p className="text-sm text-muted-foreground">Average response within 4 hours</p>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Our team works around the clock to ensure you get the help you need as quickly as possible.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                    <p className="text-sm text-muted-foreground">
+                      Our team works around the clock to ensure you get the help you need as quickly as possible.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       <Footer />
-    </div>
+    </motion.div>
   );
 };
 
