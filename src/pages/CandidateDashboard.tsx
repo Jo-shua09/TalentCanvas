@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarImage } from "@/components/ui/avatar";
 import { Helmet } from "react-helmet-async";
+import logo from "@/assets/images/logo.png";
 
 const CandidateDashboard = () => {
   const [profileCompletion] = useState(78);
@@ -94,9 +95,8 @@ const CandidateDashboard = () => {
           <div className="flex items-center space-x-4">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TC</span>
+                <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
               </div>
-              <span className="text-xl font-semibold">TalentCanvas</span>
             </Link>
           </div>
 
@@ -117,10 +117,6 @@ const CandidateDashboard = () => {
             <Avatar>
               <AvatarImage src=""></AvatarImage>
             </Avatar>
-
-            {/* <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <User className="h-4 w-4" />
-            </div> */}
           </div>
         </div>
       </header>

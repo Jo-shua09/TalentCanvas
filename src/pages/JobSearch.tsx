@@ -8,6 +8,7 @@ import { Search, Filter, MapPin, Star, Briefcase, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
+import logo from "@/assets/images/logo.png";
 
 const JobSearch = () => {
   const mockJobs = [
@@ -59,16 +60,15 @@ const JobSearch = () => {
         <div className="container mx-auto py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-sm">TC</span>
+              <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
             </div>
-            <span className="text-xl font-semibold">TalentCanvas</span>
           </Link>
 
-          <div className="">
+          <nav className="flex items-center space-x-6">
             <Avatar>
               <AvatarImage src=""></AvatarImage>
             </Avatar>
-          </div>
+          </nav>
         </div>
       </header>
 

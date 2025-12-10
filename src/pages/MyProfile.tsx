@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Upload, Plus, X, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import logo from "@/assets/images/logo.png";
 
 const MyProfile = () => {
   const [profileCompletion] = useState(78);
@@ -33,9 +34,8 @@ const MyProfile = () => {
         <div className="container mx-auto py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-sm">TC</span>
+              <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
             </div>
-            <span className="text-xl font-semibold">TalentCanvas</span>
           </Link>
 
           <nav className="flex items-center space-x-6">
