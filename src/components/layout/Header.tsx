@@ -77,21 +77,19 @@ const Header = () => {
           <Link to="/about" className="block py-2 text-foreground" onClick={() => setIsMenuOpen(false)}>
             About
           </Link>
-          <Link to="/candidate" className="block py-2 text-foreground" onClick={() => setIsMenuOpen(false)}>
-            For Candidates
-          </Link>
-          <Link to="/employer" className="block py-2 text-foreground" onClick={() => setIsMenuOpen(false)}>
-            For Employers
-          </Link>
           <Link to="/contact" className="block py-2 text-foreground" onClick={() => setIsMenuOpen(false)}>
             Contact
           </Link>
+          <Link to="/candidate" className="block py-2 text-foreground" onClick={() => setIsMenuOpen(false)}>
+            Dashboard
+          </Link>
+
           <div className="pt-4 space-y-2">
             <Button variant="outline" className="w-full" asChild>
-              <Link to="/candidate">Sign In</Link>
+              <Link to="/sign-in">Sign In</Link>
             </Button>
             <Button className="w-full gradient-primary border-0" asChild>
-              <Link to="/candidate">Get Started Free</Link>
+              <Link to="/sign-up">Get Started Free</Link>
             </Button>
           </div>
         </div>
