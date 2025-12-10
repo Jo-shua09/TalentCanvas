@@ -1,5 +1,6 @@
 import { Brain, Linkedin, Twitter, Github, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/images/logo.png";
 
 const Footer = () => {
   return (
@@ -9,7 +10,7 @@ const Footer = () => {
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
-                <Brain className="h-6 w-6 text-primary-foreground" />
+                <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
               </div>
               <span className="text-2xl font-bold">TalentCanvas</span>
             </Link>

@@ -44,13 +44,7 @@ const Header = () => {
             to="/candidate"
             className={`transition-colors ${isActive("/candidate") ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
           >
-            For Candidates
-          </Link>
-          <Link
-            to="/employer"
-            className={`transition-colors ${isActive("/employer") ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
-          >
-            For Employers
+            Dashboard
           </Link>
         </nav>
 
