@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import {
   Search,
@@ -28,10 +27,13 @@ import {
   Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/images/logo.png";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 const EmployerDashboard = () => {
   const [experienceRange, setExperienceRange] = useState([2, 8]);
   const [selectedRole, setSelectedRole] = useState("all");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const mockCandidates = [
     {
@@ -119,51 +121,59 @@ const EmployerDashboard = () => {
           content="Manage your job postings, find top talent, and track hiring progress with TalentCanvas employer dashboard."
         />
       </Helmet>
+
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TC</span>
+                <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
               </div>
-              <span className="text-xl font-semibold">TalentCanvas</span>
             </Link>
             <Badge className="bg-green-100 text-green-800">Employer</Badge>
           </div>
+
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/employer" className="text-gray-600 hover:text-blue-600">
-              Dashboard
-            </Link>
             <Link to="/candidates" className="text-gray-600 hover:text-blue-600">
               Candidates
             </Link>
             <Link to="/job-postings" className="text-gray-600 hover:text-blue-600">
               Job Postings
             </Link>
-            <Link to="/messages">
-              <MessageSquare className="h-5 w-5 text-gray-600 cursor-pointer hover:text-blue-600" />
-            </Link>
-            <Bell className="h-5 w-5 text-gray-600 cursor-pointer hover:text-blue-600" />
           </nav>
-          <div className="flex items-center space-x-3">
-            <Button asChild>
-              <Link to="/job-postings">
-                <Plus className="h-4 w-4 mr-2" />
-                Post New Job
-              </Link>
-            </Button>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <User className="h-4 w-4" />
+
+          <div className="flex items-center space-x-6">
+            <Link to="">
+              <Bell className="h-5 w-5 text-gray-600 cursor-pointer hover:text-blue-600" />
+            </Link>
+
+            <div className="flex items-center space-x-3">
+              <Button asChild>
+                <Link to="/job-postings">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Post New Job
+                </Link>
+              </Button>
+              <div className="flex items-center space-x-2">
+                {!isAuthenticated ? (
+                  <Button asChild className="gradient-primary border-0">
+                    <Link to="/sign-up">Get Started Free</Link>
+                  </Button>
+                ) : (
+                  <>
+                    <Avatar>
+                      <AvatarImage src=""></AvatarImage>
+                    </Avatar>
+                  </>
+                )}
               </div>
-              <span className="text-sm">TechCorp HR</span>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Filters */}
           <div className="space-y-6">

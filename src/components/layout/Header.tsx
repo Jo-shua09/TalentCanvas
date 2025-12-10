@@ -55,7 +55,7 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
-          {isAuthenticated ? (
+          {!isAuthenticated ? (
             <Button asChild className="gradient-primary border-0">
               <Link to="/candidate">Get Started Free</Link>
             </Button>

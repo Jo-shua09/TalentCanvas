@@ -98,6 +98,7 @@ const CandidateDashboard = () => {
                 <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
               </div>
             </Link>
+            <Badge className="bg-green-100 text-green-800">Candidate</Badge>
           </div>
 
           <nav className="hidden md:flex items-center space-x-6 font-medium">

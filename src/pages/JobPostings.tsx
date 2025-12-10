@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Eye, Edit, Users, Calendar, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/images/logo.png";
+import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 
 const JobPostings = () => {
   const [activeTab, setActiveTab] = useState("active");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const mockJobPostings = [
     {
@@ -24,7 +26,7 @@ const JobPostings = () => {
       status: "Active",
       postedDate: "2024-01-10",
       newApplicants: 8,
-      description: "We're looking for an experienced frontend developer to join our team..."
+      description: "We're looking for an experienced frontend developer to join our team...",
     },
     {
       id: 2,
@@ -36,7 +38,7 @@ const JobPostings = () => {
       status: "Active",
       postedDate: "2024-01-08",
       newApplicants: 5,
-      description: "Join our backend team to build scalable APIs and services..."
+      description: "Join our backend team to build scalable APIs and services...",
     },
     {
       id: 3,
@@ -48,13 +50,13 @@ const JobPostings = () => {
       status: "Draft",
       postedDate: "2024-01-12",
       newApplicants: 0,
-      description: "Help us create beautiful and intuitive user experiences..."
-    }
+      description: "Help us create beautiful and intuitive user experiences...",
+    },
   ];
 
   const filterJobs = (status: string) => {
     if (status === "all") return mockJobPostings;
-    return mockJobPostings.filter(job => job.status.toLowerCase() === status);
+    return mockJobPostings.filter((job) => job.status.toLowerCase() === status);
   };
 
   return (
@@ -64,12 +66,22 @@ const JobPostings = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-sm">TC</span>
+              <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
             </div>
-            <span className="text-xl font-semibold">TalentCanvas</span>
           </Link>
+
           <nav className="flex items-center space-x-6">
-            <Link to="/employer" className="text-blue-600 font-medium">Back to Dashboard</Link>
+            {!isAuthenticated ? (
+              <Button asChild className="gradient-primary border-0">
+                <Link to="/sign-up">Get Started Free</Link>
+              </Button>
+            ) : (
+              <>
+                <Avatar>
+                  <AvatarImage src=""></AvatarImage>
+                </Avatar>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -104,11 +116,7 @@ const JobPostings = () => {
                         <div className="flex items-center space-x-3 mb-2">
                           <CardTitle className="text-xl">{job.title}</CardTitle>
                           <Badge className="bg-green-100 text-green-800">{job.status}</Badge>
-                          {job.newApplicants > 0 && (
-                            <Badge className="bg-orange-100 text-orange-800">
-                              +{job.newApplicants} new
-                            </Badge>
-                          )}
+                          {job.newApplicants > 0 && <Badge className="bg-orange-100 text-orange-800">+{job.newApplicants} new</Badge>}
                         </div>
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <span>{job.department}</span>
@@ -148,9 +156,7 @@ const JobPostings = () => {
                           </div>
                           <p className="text-sm text-gray-600">Total Applications</p>
                         </div>
-                        <Button className="w-full">
-                          View Applications
-                        </Button>
+                        <Button className="w-full">View Applications</Button>
                       </div>
                     </div>
                   </CardContent>
@@ -270,18 +276,12 @@ const JobPostings = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Job Description</label>
-                  <Textarea 
-                    placeholder="Describe the role, responsibilities, and what you're looking for..."
-                    className="min-h-[150px]"
-                  />
+                  <Textarea placeholder="Describe the role, responsibilities, and what you're looking for..." className="min-h-[150px]" />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Requirements</label>
-                  <Textarea 
-                    placeholder="List the required skills, experience, and qualifications..."
-                    className="min-h-[100px]"
-                  />
+                  <Textarea placeholder="List the required skills, experience, and qualifications..." className="min-h-[100px]" />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
