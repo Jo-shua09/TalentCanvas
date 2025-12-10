@@ -4,13 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Mail, Lock, Eye, EyeOff, Sparkles, Zap, Target, TrendingUp, Users, Clock, CheckCircle, X } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Sparkles, Target, TrendingUp, Users, Clock, X } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/images/logo.png";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Loader from "@/components/ui/loader";
 import { formVariants, leftPanelVariants, signUpcontainerVariants } from "@/lib/animations";
-import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 
 // Main SignIn Component
