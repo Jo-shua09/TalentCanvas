@@ -84,14 +84,22 @@ const Header = () => {
             Dashboard
           </Link>
 
-          <div className="pt-4 space-y-2">
-            <Button variant="outline" className="w-full" asChild>
-              <Link to="/sign-in">Sign In</Link>
-            </Button>
-            <Button className="w-full gradient-primary border-0" asChild>
-              <Link to="/sign-up">Get Started Free</Link>
-            </Button>
-          </div>
+          {!isAuthenticated ? (
+            <div className="pt-4 space-y-2">
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/sign-in">Sign In</Link>
+              </Button>
+              <Button className="w-full gradient-primary border-0" asChild>
+                <Link to="/sign-up">Get Started Free</Link>
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Avatar>
+                <AvatarImage src=""></AvatarImage>
+              </Avatar>
+            </>
+          )}
         </div>
       )}
     </header>

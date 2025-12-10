@@ -53,7 +53,7 @@ const SignIn = () => {
               <CardTitle className="text-2xl">Welcome Back</CardTitle>
               <CardDescription>Sign in to access your personalized dashboard</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 lg:space-y-4 md:p-6 p-3">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
