@@ -115,7 +115,7 @@ const SignIn = () => {
                   <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Google-favicon-2015.png" alt="Google Logo" className="h-7" />
                   Google
                 </Button>
-                <Button variant="outline" className="flex items-center gap-3">
+                <Button variant="outline" className="flex items-center cursor-not-allowed hover:scale-100 opacity-50 gap-3">
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/2048px-2021_Facebook_icon.svg.png"
                     alt="Facebook Logo"
