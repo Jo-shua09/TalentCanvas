@@ -7,24 +7,74 @@ import { Badge } from "@/components/ui/badge";
 import { Brain, Mail, Lock, Eye, EyeOff, Sparkles, Zap, Target, TrendingUp, Users, Clock } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/images/logo.png";
+import { motion } from "framer-motion";
+import Loader from "@/components/ui/loader";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const navigate = useNavigate();
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 },
+    },
+  };
+
+  const leftPanelVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.8, delay: 0.2 },
+    },
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.6, delay: 0.4 },
+    },
+  };
 
   const handleSignIn = async () => {
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsLoading(false);
+    setShowLoader(true);
     localStorage.setItem("isAuthenticated", "true");
-    navigate("/home");
+    setTimeout(() => {
+      navigate("/home");
+    }, 3000);
   };
 
+  if (showLoader) {
+    return <Loader size="full" />;
+  }
+
   return (
-    <div className="min-h-screen bg-background flex">
+    <motion.div className="min-h-screen bg-background flex" initial="hidden" animate="visible" variants={containerVariants}>
       {/* Left Side - Sign In Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-8">
+      <motion.div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-8" variants={formVariants}>
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-4">
@@ -122,10 +172,13 @@ const SignIn = () => {
             </a>
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Right Side - Content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/20 to-secondary/20 p-12 flex-col justify-between relative overflow-hidden">
+      <motion.div
+        className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/20 to-secondary/20 p-12 flex-col justify-between relative overflow-hidden"
+        variants={leftPanelVariants}
+      >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
@@ -194,8 +247,8 @@ const SignIn = () => {
             <div className="text-sm text-muted-foreground">User Rating</div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

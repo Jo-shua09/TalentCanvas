@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { useState, useEffect } from "react";
 import Loader from "@/components/ui/loader";
 import Onboarding from "@/pages/Onboarding";
 import Index from "@/pages/Index";
@@ -28,41 +29,57 @@ import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 
-const AppRouter = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <Routes>
-            <Route path="/" element={<Loader />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/home" element={<Index />} />
-            <Route path="/candidate" element={<CandidateDashboard />} />
-            <Route path="/employer" element={<EmployerDashboard />} />
-            <Route path="/jobs" element={<JobSearch />} />
-            <Route path="/profile" element={<MyProfile />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/job-postings" element={<JobPostings />} />
-            <Route path="/candidates" element={<CandidateSearch />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/career-advice" element={<CareerAdvice />} />
-            <Route path="/skill-assessment" element={<SkillAssessment />} />
-            <Route path="/salary-insights" element={<SalaryInsights />} />
-            <Route path="/hiring-analytics" element={<HiringAnalytics />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+const AppRouter = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // Show loader for 3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <Loader size="full" />;
+  }
+
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Routes>
+              <Route path="/" element={<Onboarding />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/home" element={<Index />} />
+              <Route path="/candidate" element={<CandidateDashboard />} />
+              <Route path="/employer" element={<EmployerDashboard />} />
+              <Route path="/jobs" element={<JobSearch />} />
+              <Route path="/profile" element={<MyProfile />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/job-postings" element={<JobPostings />} />
+              <Route path="/candidates" element={<CandidateSearch />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/career-advice" element={<CareerAdvice />} />
+              <Route path="/skill-assessment" element={<SkillAssessment />} />
+              <Route path="/salary-insights" element={<SalaryInsights />} />
+              <Route path="/hiring-analytics" element={<HiringAnalytics />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+};
 
 export default AppRouter;
