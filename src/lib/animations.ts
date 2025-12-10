@@ -113,12 +113,27 @@ export const ctaContainerVariants = {
 
 export const ctaItemVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 export const ctaIconVariants = {
   hidden: { opacity: 0, scale: 0.8, rotate: -10 },
-  visible: { opacity: 1, scale: 1, rotate: 0 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 // Testimonials specific variants
@@ -135,12 +150,27 @@ export const testimonialsContainerVariants = {
 
 export const testimonialsItemVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 export const testimonialsCardVariants = {
   hidden: { opacity: 0, y: 50, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 // Signup/Signin specific variants

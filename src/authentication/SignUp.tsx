@@ -179,7 +179,7 @@ const SignUp = () => {
               <Button className="w-full gradient-primary border-0" onClick={handleSignUp} disabled={isLoading}>
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
+                    <div className="animate-spin border-t-2 rounded-full p-3"></div>
                   </>
                 ) : (
                   <>Create Account</>
