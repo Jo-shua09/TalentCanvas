@@ -9,52 +9,13 @@ import { useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/images/logo.png";
 import { motion } from "framer-motion";
 import Loader from "@/components/ui/loader";
+import { formVariants, leftPanelVariants, signUpcontainerVariants } from "@/lib/animations";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const navigate = useNavigate();
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  };
-
-  const leftPanelVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.8, delay: 0.2 },
-    },
-  };
-
-  const formVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.6, delay: 0.4 },
-    },
-  };
 
   const handleSignIn = async () => {
     setIsLoading(true);
@@ -72,7 +33,7 @@ const SignIn = () => {
   }
 
   return (
-    <motion.div className="min-h-screen bg-background flex" initial="hidden" animate="visible" variants={containerVariants}>
+    <motion.div className="min-h-screen bg-background flex" initial="hidden" animate="visible" variants={signUpcontainerVariants}>
       {/* Left Side - Sign In Form */}
       <motion.div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-8" variants={formVariants}>
         <div className="w-full max-w-md">

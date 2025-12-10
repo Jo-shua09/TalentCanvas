@@ -8,58 +8,11 @@ import { slides } from "@/assets/data/onboarding";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import logo from "@/assets/images/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
+import { OnboardingButtonVariants, onboardingContainerVariants, OnboardingItemVariants, slideVariants } from "@/lib/animations";
 
 const Onboarding = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-    }),
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  };
-
-  const buttonVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.5 },
-    },
-  };
 
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
@@ -111,7 +64,7 @@ const Onboarding = () => {
       className="min-h-screen bg-background flex items-center justify-center p-4"
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
+      variants={onboardingContainerVariants}
     >
       <div className="w-full max-w-6xl flex relative flex-col md:flex-row gap-12">
         <div className="flex-[2]">
@@ -119,7 +72,7 @@ const Onboarding = () => {
             <Card className="border shadow-xl">
               <CardContent className="p-8 md:p-8">
                 {/* Progress Indicator */}
-                <motion.div className="flex justify-center mb-12" variants={itemVariants}>
+                <motion.div className="flex justify-center mb-12" variants={OnboardingItemVariants}>
                   <div className="flex gap-2">
                     {slides.map((_, index) => (
                       <motion.button
@@ -150,7 +103,7 @@ const Onboarding = () => {
                       opacity: { duration: 0.3 },
                     }}
                   >
-                    <motion.div className="flex justify-center items-center mb-4" variants={itemVariants}>
+                    <motion.div className="flex justify-center items-center mb-4" variants={OnboardingItemVariants}>
                       <motion.img
                         src={logo}
                         alt="Logo image"
@@ -162,24 +115,24 @@ const Onboarding = () => {
                       />
                     </motion.div>
 
-                    <motion.div variants={itemVariants}>
+                    <motion.div variants={OnboardingItemVariants}>
                       <Badge className="mb-4 gradient-primary text-primary-foreground border-0 px-4 py-2">
                         <Sparkles className="h-4 w-4 mr-2" />
                         {currentSlideData.subtitle}
                       </Badge>
                     </motion.div>
 
-                    <motion.h1 className="text-3xl md:text-4xl font-bold mb-4" variants={itemVariants}>
+                    <motion.h1 className="text-3xl md:text-4xl font-bold mb-4" variants={OnboardingItemVariants}>
                       {currentSlideData.title}
                     </motion.h1>
-                    <motion.p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed" variants={itemVariants}>
+                    <motion.p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed" variants={OnboardingItemVariants}>
                       {currentSlideData.description}
                     </motion.p>
                   </motion.div>
                 </AnimatePresence>
 
                 {/* Features */}
-                <motion.div className="flex flex-wrap justify-center gap-4 mb-8" variants={itemVariants}>
+                <motion.div className="flex flex-wrap justify-center gap-4 mb-8" variants={OnboardingItemVariants}>
                   {currentSlideData.features.map((feature, index) => (
                     <motion.div
                       key={index}
@@ -196,7 +149,7 @@ const Onboarding = () => {
                 </motion.div>
 
                 {/* Navigation */}
-                <motion.div className="flex justify-between items-center mt-10" variants={buttonVariants}>
+                <motion.div className="flex justify-between items-center mt-10" variants={OnboardingButtonVariants}>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="outline" onClick={prevSlide} disabled={currentSlide === 0} className="flex items-center gap-2">
                       <ArrowLeft className="h-4 w-4" />

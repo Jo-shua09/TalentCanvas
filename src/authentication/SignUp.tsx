@@ -9,6 +9,7 @@ import { useNavigate, Link } from "react-router-dom";
 import logo from "@/assets/images/logo.png";
 import { motion } from "framer-motion";
 import Loader from "@/components/ui/loader";
+import { formVariants, leftPanelVariants, signUpcontainerVariants } from "@/lib/animations";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,44 +18,6 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  };
-
-  const leftPanelVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.8, delay: 0.2 },
-    },
-  };
-
-  const formVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.6, delay: 0.4 },
-    },
-  };
 
   const handleSignUp = async () => {
     setIsLoading(true);
@@ -72,7 +35,7 @@ const SignUp = () => {
   }
 
   return (
-    <motion.div className="min-h-screen bg-background flex" initial="hidden" animate="visible" variants={containerVariants}>
+    <motion.div className="min-h-screen bg-background flex" initial="hidden" animate="visible" variants={signUpcontainerVariants}>
       {/* Left Side - Content */}
       <motion.div
         className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/20 to-secondary/20 p-12 flex-col justify-between relative overflow-hidden"
@@ -217,7 +180,6 @@ const SignUp = () => {
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
-                    <span className="ml-2">Creating Account...</span>
                   </>
                 ) : (
                   <>Create Account</>
