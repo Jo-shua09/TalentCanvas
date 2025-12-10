@@ -4,53 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Search, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { cardVariants, containerVariants, itemVariants, stepVariants } from "@/lib/animations";
 
 export default function HowItWorks() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
-
-  const stepVariants = {
-    hidden: { opacity: 0, x: -30 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
-
   return (
     <div>
       <motion.section
