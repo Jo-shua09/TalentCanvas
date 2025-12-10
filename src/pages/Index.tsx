@@ -159,7 +159,7 @@ const Index = () => {
             <Swiper
               modules={[Autoplay]}
               spaceBetween={50}
-              slidesPerView={5}
+              slidesPerView={window.innerWidth >= 1024 ? 5 : window.innerWidth >= 768 ? 4 : 3.5}
               autoplay={{
                 delay: 0, // Set to 0 for continuous movement
                 disableOnInteraction: false,

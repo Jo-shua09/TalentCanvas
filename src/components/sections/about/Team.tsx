@@ -8,7 +8,7 @@ import { containerVariants, itemVariants, cardVariants } from "@/lib/animations"
 export default function Team() {
   return (
     <motion.section className="py-12 px-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-      <div className="container mx-auto">
+      <div className="md:container mx-auto">
         <motion.div className="text-center mb-10" variants={itemVariants}>
           <Badge variant="outline" className="mb-4">
             Our Team

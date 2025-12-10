@@ -15,7 +15,7 @@ export default function Mission() {
 
   return (
     <motion.section className="py-12 px-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-      <div className="container mx-auto">
+      <div className="md:container mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div variants={itemVariants}>
             <Badge variant="outline" className="mb-4">

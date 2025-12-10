@@ -68,7 +68,7 @@ const About = () => {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <div className="container mx-auto text-center">
+        <div className="px-4 md:container mx-auto text-center">
           <motion.div variants={ctaIconVariants}>
             <Award className="h-16 w-16 mx-auto mb-6 opacity-80" />
           </motion.div>

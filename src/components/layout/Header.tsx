@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
     <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="container mx-auto py-4 flex items-center justify-between">
+      <div className="px-4 md:container mx-auto py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
             <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />

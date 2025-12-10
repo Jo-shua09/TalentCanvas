@@ -51,7 +51,7 @@ const Onboarding = () => {
     const url = animationUrls[currentSlide] || animationUrls[animationUrls.length - 1];
 
     return (
-      <div className="hidden flex-1 m-auto md:flex justify-end w-full">
+      <div className="flex-1 m-auto justify-end w-full">
         <div className="w-[10rem] h-[10rem] md:w-[25rem] md:h-[25rem]">
           <DotLottieReact src={url} loop autoplay />
         </div>
@@ -192,7 +192,9 @@ const Onboarding = () => {
           )}
         </motion.div>
 
-        <SlideAnimations />
+        <div className="hidden md:flex ">
+          <SlideAnimations />
+        </div>
       </div>
     </motion.div>
   );

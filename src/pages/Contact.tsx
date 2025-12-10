@@ -102,7 +102,7 @@ const Contact = () => {
 
       {/* Contact Info Cards */}
       <motion.section className="py-12 px-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-        <div className="container mx-auto">
+        <div className="md:container mx-auto">
           <motion.div className="grid md:grid-cols-3 gap-6" variants={containerVariants}>
             {contactInfo.map((info, index) => (
               <motion.div key={info.title} variants={cardVariants} custom={index}>
@@ -124,7 +124,7 @@ const Contact = () => {
 
       {/* Contact Form Section */}
       <motion.section className="py-12 px-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-        <div className="container mx-auto">
+        <div className="md:container mx-auto">
           <motion.div className="grid lg:grid-cols-2 gap-8" variants={containerVariants}>
             {/* Form */}
             <motion.div variants={cardVariants}>
