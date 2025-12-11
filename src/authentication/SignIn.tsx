@@ -15,19 +15,29 @@ import { SignInContent } from "./authSides";
 
 // Firebase imports
 import { auth, db } from "@/lib/firebase";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { setDoc } from "firebase/firestore";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  linkWithCredential,
+  fetchSignInMethodsForEmail,
+  EmailAuthProvider,
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
+import AccountLinkingModal from "./AccountLinkingModal";
 
 // Main SignIn Component
-const SignIn = () => {
+export const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [linkingEmail, setLinkingEmail] = useState("");
+  const [pendingCredential, setPendingCredential] = useState<import("firebase/auth").AuthCredential | null>(null);
+  const [showLinkingModal, setShowLinkingModal] = useState(false);
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -48,10 +58,10 @@ const SignIn = () => {
       return;
     }
 
-    try {
-      // Show loading toast
-      const loadingToast = toast.loading("Signing in...");
+    // Show loading toast and get its ID
+    const loadingToastId = toast.loading("Signing in...");
 
+    try {
       // 1. Sign in with Firebase Authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -83,63 +93,78 @@ const SignIn = () => {
         localStorage.setItem("userName", `${userData.firstName} ${userData.lastName}`);
         localStorage.setItem("userData", JSON.stringify(userData));
 
-        // 5. Success
-        toast.dismiss(loadingToast);
+        // 5. Success - Dismiss loading toast first
+        toast.dismiss(loadingToastId);
         toast.success("Signed in successfully!");
 
         setIsLoading(false);
         setShowLoader(true);
 
-        // 6. Redirect to home
+        // 6. Check onboarding status and navigate
         setTimeout(() => {
-          navigate("/home");
-        }, 2000);
+          if (userData.onboardingCompleted) {
+            localStorage.setItem("onboardingCompleted", "true");
+            navigate("/home");
+          } else {
+            // User needs to complete onboarding
+            navigate("/onboarding");
+          }
+        }, 1000);
       } else {
-        toast.dismiss(loadingToast);
+        // User document doesn't exist in Firestore
+        toast.dismiss(loadingToastId);
         toast.error("User data not found. Please contact support.");
         setIsLoading(false);
       }
     } catch (error: unknown) {
-      const firebaseError = error as { code?: string };
       console.error("Sign in error:", error);
 
-      // Handle specific Firebase errors
+      // CRITICAL: Always dismiss loading toast on error
+      toast.dismiss(loadingToastId);
+
       let errorMessage = "An error occurred during sign in. Please try again.";
 
-      switch (firebaseError.code) {
-        case "auth/invalid-credential":
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-          errorMessage = "Invalid email or password";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "This account has been disabled";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "Network error. Please check your connection";
-          break;
-        case "auth/too-many-requests":
-          errorMessage = "Too many failed attempts. Please try again later";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email address";
-          break;
-        case "auth/operation-not-allowed":
-          errorMessage = "Email/password sign-in is not enabled";
-          break;
+      if (typeof error === "object" && error !== null && "code" in error) {
+        switch ((error as { code: string }).code) {
+          case "auth/invalid-credential":
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+            errorMessage = "Invalid email or password.";
+            break;
+          case "auth/user-disabled":
+            errorMessage = "This account has been disabled.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Network error. Please check your connection.";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Too many failed attempts. Please try again later.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "Invalid email address.";
+            break;
+          case "auth/operation-not-allowed":
+            errorMessage = "Email/password sign-in is not enabled.";
+            break;
+        }
       }
 
+      // Show error toast after dismissing loading toast
+      // Show error toast after dismissing loading toast
       toast.error(errorMessage);
       setIsLoading(false);
     }
   };
 
-  // Google Sign In
+  // Advanced Google Sign In with Account Linking
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const credential = GoogleAuthProvider.credentialFromResult(result);
 
       // Check if user exists in Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -153,11 +178,12 @@ const SignIn = () => {
           email: user.email,
           firstName: userName[0] || "",
           lastName: userName[1] || "",
-          role: "candidate", // Default role for Google sign-in
+          role: "candidate",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           profileComplete: false,
           onboardingCompleted: false,
+          authProviders: ["google"],
         };
 
         await setDoc(doc(db, "users", user.uid), userData);
@@ -179,19 +205,16 @@ const SignIn = () => {
           resumeUrl: "",
           location: "",
           phoneNumber: "",
+          authProviders: ["google"],
           onboardingCompleted: false,
         };
 
         await setDoc(doc(db, "candidates", user.uid), candidateData);
       }
 
-      // Get user data
-      const existingUserDoc = await getDoc(doc(db, "users", user.uid));
-      const userData = existingUserDoc.exists() ? existingUserDoc.data() : null;
-
-      // Save to localStorage
+      // Save to localStorage and redirect
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userRole", userData?.role || "candidate");
+      localStorage.setItem("userRole", "candidate");
       localStorage.setItem("userId", user.uid);
       localStorage.setItem("userEmail", user.email || "");
       localStorage.setItem("userName", user.displayName || "");
@@ -203,27 +226,150 @@ const SignIn = () => {
         navigate("/home");
       }, 2000);
     } catch (error: unknown) {
-      const firebaseError = error as { code?: string };
       console.error("Google sign in error:", error);
 
+      // Handle account linking error specifically
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code: string }).code === "auth/account-exists-with-different-credential"
+      ) {
+        // The email already exists with password auth
+        type FirebaseAccountExistsError = {
+          code: string;
+          customData?: { email?: string };
+          credential?: import("firebase/auth").AuthCredential;
+        };
+        const firebaseError = error as FirebaseAccountExistsError;
+        const email = firebaseError.customData?.email;
+        const pendingCredential = firebaseError.credential; // Google credential
+
+        // Show account linking modal
+        setLinkingEmail(email);
+        setPendingCredential(pendingCredential);
+        setShowLinkingModal(true);
+        return;
+      }
+
+      // Other Google errors
       let errorMessage = "Failed to sign in with Google";
 
-      switch (firebaseError.code) {
-        case "auth/popup-closed-by-user":
-          errorMessage = "Sign in was cancelled";
-          break;
-        case "auth/popup-blocked":
-          errorMessage = "Popup was blocked by your browser. Please allow popups for this site";
-          break;
-        case "auth/unauthorized-domain":
-          errorMessage = "This domain is not authorized for Google sign-in";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "Network error. Please check your connection";
-          break;
+      if (typeof error === "object" && error !== null && "code" in error) {
+        switch ((error as { code: string }).code) {
+          case "auth/popup-closed-by-user":
+            errorMessage = "Sign in was cancelled";
+            break;
+          case "auth/popup-blocked":
+            errorMessage = "Popup was blocked. Please allow popups for this site";
+            break;
+          case "auth/unauthorized-domain":
+            errorMessage = "This domain is not authorized for Google sign-in";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Network error. Please check your connection";
+            break;
+        }
       }
 
       toast.error(errorMessage);
+    }
+  };
+
+  // Handle linking accounts after password verification
+  const handleLinkAccounts = async (email: string, password: string, googleCredential: import("firebase/auth").AuthCredential) => {
+    try {
+      setIsLoading(true);
+
+      // 1. Sign in with email/password first
+      const emailCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = emailCredential.user;
+
+      // 2. Link Google credential to the existing account
+      await linkWithCredential(user, googleCredential);
+
+      // 3. Update user data in Firestore to include Google as auth provider
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const currentProviders = userData.authProviders || ["email"];
+
+        // Add Google to auth providers if not already present
+        if (!currentProviders.includes("google")) {
+          await setDoc(
+            userRef,
+            {
+              ...userData,
+              authProviders: [...currentProviders, "google"],
+              updatedAt: new Date().toISOString(),
+            },
+            { merge: true }
+          );
+        }
+
+        // Update role-specific document too
+        if (userData.role === "candidate") {
+          const candidateRef = doc(db, "candidates", user.uid);
+          const candidateDoc = await getDoc(candidateRef);
+
+          if (candidateDoc.exists()) {
+            const candidateData = candidateDoc.data();
+            const candidateProviders = candidateData.authProviders || ["email"];
+
+            await setDoc(
+              candidateRef,
+              {
+                ...candidateData,
+                authProviders: [...candidateProviders, "google"],
+                updatedAt: new Date().toISOString(),
+              },
+              { merge: true }
+            );
+          }
+        }
+      }
+
+      // 4. Save to localStorage and redirect
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userId", user.uid);
+      localStorage.setItem("userEmail", user.email || "");
+
+      toast.success("Accounts linked successfully! Now you can sign in with either method.");
+
+      setShowLinkingModal(false);
+      setShowLoader(true);
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
+    } catch (error: unknown) {
+      console.error("Account linking error:", error);
+
+      let errorMessage = "Failed to link accounts. Please try again.";
+
+      if (typeof error === "object" && error !== null && "code" in error) {
+        const errorCode = (error as { code: string }).code;
+        switch (errorCode) {
+          case "auth/wrong-password":
+            errorMessage = "Incorrect password. Please try again.";
+            break;
+          case "auth/requires-recent-login":
+            errorMessage = "Please sign out and sign in again to link accounts.";
+            break;
+          case "auth/credential-already-in-use":
+            errorMessage = "This Google account is already linked to another user.";
+            break;
+          case "auth/provider-already-linked":
+            errorMessage = "Google is already linked to your account.";
+            break;
+        }
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -364,8 +510,21 @@ const SignIn = () => {
 
       {/* Forgot Password Modal */}
       <ForgotPasswordModal isOpen={showForgotPassword} onClose={() => setShowForgotPassword(false)} />
+
+      {/* Account Linking Modal */}
+      {showLinkingModal && pendingCredential && (
+        <AccountLinkingModal
+          isOpen={showLinkingModal}
+          onClose={() => {
+            setShowLinkingModal(false);
+            setPendingCredential(null);
+          }}
+          email={linkingEmail}
+          googleCredential={pendingCredential}
+          onLinkAccounts={handleLinkAccounts}
+          isLoading={isLoading}
+        />
+      )}
     </>
   );
 };
-
-export default SignIn;

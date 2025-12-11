@@ -117,6 +117,7 @@ const SignUp = () => {
         updatedAt: new Date().toISOString(),
         profileComplete: false,
         onboardingCompleted: false,
+        authProviders: ["email"],
       };
 
       // 3. Save user data to Firestore
@@ -236,7 +237,7 @@ const SignUp = () => {
 
       {/* Right Side - Sign Up Form */}
       <motion.div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-6 lg:p-8" variants={formVariants}>
-        <div className="w-full max-w-md lg:max-w-xl">
+        <div className="w-full max-w-xl lg:max-w-xl">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-4">
             <div className="w-12 h-12 lg:w-16 lg:h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">

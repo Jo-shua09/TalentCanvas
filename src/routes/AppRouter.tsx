@@ -22,12 +22,12 @@ import CareerAdvice from "@/pages/CareerAdvice";
 import SkillAssessment from "@/pages/SkillAssessment";
 import SalaryInsights from "@/pages/SalaryInsights";
 import HiringAnalytics from "@/pages/HiringAnalytics";
-import SignIn from "@/authentication/SignIn";
 import SignUp from "@/authentication/SignUp";
 import NotFound from "@/pages/NotFound";
 import { HelmetProvider } from "react-helmet-async";
 import ProtectedRoute from "@/components/extras/ProtectedRoute";
 import AuthCheck from "@/components/extras/AuthCheck";
+import { SignIn } from "@/authentication/SignIn";
 
 const queryClient = new QueryClient();
 

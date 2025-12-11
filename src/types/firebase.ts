@@ -1,4 +1,3 @@
-// src/types/firebase.ts
 export interface UserData {
   uid: string;
   email: string;
@@ -9,6 +8,7 @@ export interface UserData {
   updatedAt: string;
   profileComplete: boolean;
   onboardingCompleted: boolean;
+  authProviders: ["email"];
 }
 
 export interface CandidateData {
