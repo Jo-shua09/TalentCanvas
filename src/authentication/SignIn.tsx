@@ -11,6 +11,14 @@ import { motion } from "framer-motion";
 import Loader from "@/components/ui/loader";
 import { formVariants, leftPanelVariants, signUpcontainerVariants } from "@/lib/animations";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import { SignInContent } from "./authSides";
+
+// Firebase imports
+import { auth, db } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { setDoc } from "firebase/firestore";
+import { toast } from "sonner";
 
 // Main SignIn Component
 const SignIn = () => {
@@ -18,17 +26,210 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    setShowLoader(true);
-    localStorage.setItem("isAuthenticated", "true");
-    setTimeout(() => {
-      navigate("/home");
-    }, 3000);
+
+    // Validation
+    if (!email || !password) {
+      toast.error("Please enter both email and password");
+      setIsLoading(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Show loading toast
+      const loadingToast = toast.loading("Signing in...");
+
+      // 1. Sign in with Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Get user data from Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+
+        // 3. Get role-specific data
+        if (userData.role === "candidate") {
+          const candidateDoc = await getDoc(doc(db, "candidates", user.uid));
+          if (candidateDoc.exists()) {
+            localStorage.setItem("candidateData", JSON.stringify(candidateDoc.data()));
+          }
+        } else if (userData.role === "employer") {
+          const employerDoc = await getDoc(doc(db, "employers", user.uid));
+          if (employerDoc.exists()) {
+            localStorage.setItem("employerData", JSON.stringify(employerDoc.data()));
+          }
+        }
+
+        // 4. Save to localStorage
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("userRole", userData.role || "candidate");
+        localStorage.setItem("userId", user.uid);
+        localStorage.setItem("userEmail", user.email || "");
+        localStorage.setItem("userName", `${userData.firstName} ${userData.lastName}`);
+        localStorage.setItem("userData", JSON.stringify(userData));
+
+        // 5. Success
+        toast.dismiss(loadingToast);
+        toast.success("Signed in successfully!");
+
+        setIsLoading(false);
+        setShowLoader(true);
+
+        // 6. Redirect to home
+        setTimeout(() => {
+          navigate("/home");
+        }, 2000);
+      } else {
+        toast.dismiss(loadingToast);
+        toast.error("User data not found. Please contact support.");
+        setIsLoading(false);
+      }
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+      console.error("Sign in error:", error);
+
+      // Handle specific Firebase errors
+      let errorMessage = "An error occurred during sign in. Please try again.";
+
+      switch (firebaseError.code) {
+        case "auth/invalid-credential":
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+          errorMessage = "Invalid email or password";
+          break;
+        case "auth/user-disabled":
+          errorMessage = "This account has been disabled";
+          break;
+        case "auth/network-request-failed":
+          errorMessage = "Network error. Please check your connection";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Too many failed attempts. Please try again later";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Invalid email address";
+          break;
+        case "auth/operation-not-allowed":
+          errorMessage = "Email/password sign-in is not enabled";
+          break;
+      }
+
+      toast.error(errorMessage);
+      setIsLoading(false);
+    }
+  };
+
+  // Google Sign In
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if user exists in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (!userDoc.exists()) {
+        // Create new user in Firestore
+        const userName = user.displayName?.split(" ") || ["", ""];
+
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          firstName: userName[0] || "",
+          lastName: userName[1] || "",
+          role: "candidate", // Default role for Google sign-in
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          profileComplete: false,
+        };
+
+        await setDoc(doc(db, "users", user.uid), userData);
+
+        // Create candidate data
+        const candidateData = {
+          userId: user.uid,
+          email: user.email,
+          firstName: userName[0] || "",
+          lastName: userName[1] || "",
+          currentJobTitle: "",
+          experienceYears: 0,
+          skills: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          applications: [],
+          savedJobs: [],
+          profileImage: user.photoURL || "",
+          resumeUrl: "",
+          location: "",
+          phoneNumber: "",
+        };
+
+        await setDoc(doc(db, "candidates", user.uid), candidateData);
+      }
+
+      // Get user data
+      const existingUserDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = existingUserDoc.exists() ? existingUserDoc.data() : null;
+
+      // Save to localStorage
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userRole", userData?.role || "candidate");
+      localStorage.setItem("userId", user.uid);
+      localStorage.setItem("userEmail", user.email || "");
+      localStorage.setItem("userName", user.displayName || "");
+
+      toast.success("Signed in with Google successfully!");
+
+      setShowLoader(true);
+      setTimeout(() => {
+        navigate("/home");
+      }, 2000);
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+      console.error("Google sign in error:", error);
+
+      let errorMessage = "Failed to sign in with Google";
+
+      switch (firebaseError.code) {
+        case "auth/popup-closed-by-user":
+          errorMessage = "Sign in was cancelled";
+          break;
+        case "auth/popup-blocked":
+          errorMessage = "Popup was blocked by your browser. Please allow popups for this site";
+          break;
+        case "auth/unauthorized-domain":
+          errorMessage = "This domain is not authorized for Google sign-in";
+          break;
+        case "auth/network-request-failed":
+          errorMessage = "Network error. Please check your connection";
+          break;
+      }
+
+      toast.error(errorMessage);
+    }
+  };
+
+  // Handle Enter key press for sign in
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !isLoading) {
+      handleSignIn();
+    }
   };
 
   if (showLoader) {
@@ -62,7 +263,15 @@ const SignIn = () => {
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input id="email" type="email" placeholder="Enter your email" className="pl-10" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      className="pl-10"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                    />
                   </div>
                 </div>
 
@@ -70,7 +279,15 @@ const SignIn = () => {
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input id="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" className="pl-10 pr-10" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="pl-10 pr-10"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                    />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
@@ -111,11 +328,11 @@ const SignIn = () => {
             <div className="mt-6">
               <p className="text-center text-sm text-muted-foreground mb-3">Or sign in with</p>
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="flex items-center gap-3">
+                <Button variant="outline" className="flex items-center gap-3" onClick={handleGoogleSignIn} disabled={isLoading}>
                   <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Google-favicon-2015.png" alt="Google Logo" className="h-7" />
                   Google
                 </Button>
-                <Button variant="outline" className="flex items-center cursor-not-allowed hover:scale-100 opacity-50 gap-3">
+                <Button variant="outline" className="flex items-center cursor-not-allowed hover:scale-100 opacity-50 gap-3" disabled>
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/2048px-2021_Facebook_icon.svg.png"
                     alt="Facebook Logo"
@@ -140,79 +357,7 @@ const SignIn = () => {
         </motion.div>
 
         {/* Right Side - Content */}
-        <motion.div
-          className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/20 to-secondary/20 p-12 flex-col justify-between relative overflow-hidden"
-          variants={leftPanelVariants}
-        >
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center">
-                <img src={logo} alt="Logo image" loading="lazy" className="h-24 object-contain" />
-              </div>
-              <h1 className="text-2xl font-bold">TalentCanvas</h1>
-            </div>
-
-            <div className="max-w-md">
-              <h2 className="text-4xl font-bold mb-4">
-                Welcome back!
-                <span className="block gradient-text bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Your opportunities await
-                </span>
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">Continue your career journey with personalized matches and AI-powered insights.</p>
-
-              {/* Features List */}
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <TrendingUp className="h-3 w-3" />
-                  </div>
-                  <span>Check your application status updates</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <Target className="h-3 w-3" />
-                  </div>
-                  <span>View new personalized job matches</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <Users className="h-3 w-3" />
-                  </div>
-                  <span>Connect with your interviewers</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <Clock className="h-3 w-3" />
-                  </div>
-                  <span>Access your scheduled interviews</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="flex gap-8 justify-between mt-8">
-            <div className="text-center">
-              <div className="text-2xl font-bold gradient-text">85%</div>
-              <div className="text-sm text-muted-foreground">Interview Success Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold gradient-text">24/7</div>
-              <div className="text-sm text-muted-foreground">Support Available</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold gradient-text">4.8★</div>
-              <div className="text-sm text-muted-foreground">User Rating</div>
-            </div>
-          </div>
-        </motion.div>
+        <SignInContent />
       </motion.div>
 
       {/* Forgot Password Modal */}
