@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ArrowLeft, Sparkles, CheckCircle2, SkipForward } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { slides } from "@/assets/data/onboarding";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -18,8 +18,8 @@ const Onboarding = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
-      // Mark onboarding as completed and navigate to signin
-      localStorage.setItem("onboardingCompleted", "true");
+      // Mark onboarding as seen and navigate to sign-up
+      localStorage.setItem("hasSeenOnboarding", "true");
       navigate("/sign-up");
     }
   };
@@ -35,7 +35,9 @@ const Onboarding = () => {
   };
 
   const skipToLastSlide = () => {
-    setCurrentSlide(slides.length - 1);
+    // Mark onboarding as seen and navigate to sign-up
+    localStorage.setItem("hasSeenOnboarding", "true");
+    navigate("/sign-up");
   };
 
   const currentSlideData = slides[currentSlide];

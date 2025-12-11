@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import logo from "@/assets/images/logo.png";
+import LogoutButton from "../extras/LogoutButton";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -51,7 +52,8 @@ const Header = () => {
         <div className="hidden md:flex items-center space-x-4">
           {!isAuthenticated ? (
             <Button asChild className="gradient-primary border-0">
-              <Link to="/candidate">Get Started Free</Link>
+              {/* <Link to="/candidate">Get Started Free</Link> */}
+              <LogoutButton />
             </Button>
           ) : (
             <>

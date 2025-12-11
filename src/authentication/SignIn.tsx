@@ -157,6 +157,7 @@ const SignIn = () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           profileComplete: false,
+          onboardingCompleted: false,
         };
 
         await setDoc(doc(db, "users", user.uid), userData);
@@ -178,6 +179,7 @@ const SignIn = () => {
           resumeUrl: "",
           location: "",
           phoneNumber: "",
+          onboardingCompleted: false,
         };
 
         await setDoc(doc(db, "candidates", user.uid), candidateData);

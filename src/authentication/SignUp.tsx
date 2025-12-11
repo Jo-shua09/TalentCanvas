@@ -116,6 +116,7 @@ const SignUp = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         profileComplete: false,
+        onboardingCompleted: false,
       };
 
       // 3. Save user data to Firestore
@@ -145,6 +146,7 @@ const SignUp = () => {
           resumeUrl: "",
           location: "",
           phoneNumber: "",
+          onboardingCompleted: false,
         };
 
         await setDoc(doc(db, "candidates", user.uid), candidateData);
@@ -165,6 +167,7 @@ const SignUp = () => {
           website: "",
           description: "",
           phoneNumber: "",
+          onboardingCompleted: false,
         };
 
         await setDoc(doc(db, "employers", user.uid), employerData);

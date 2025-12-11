@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components
 import { auth } from "@/lib/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "sonner";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -111,7 +112,11 @@ const ForgotPasswordModal = ({ isOpen, onClose }: ForgotPasswordModalProps) => {
             <DialogContent className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] border bg-background p-0 shadow-lg duration-200 sm:rounded-lg">
               <Card className="border-0 shadow-none">
                 <CardHeader className="text-center relative">
+                  <DialogTitle className="sr-only">Reset Password</DialogTitle>
                   <CardTitle className="text-2xl mt-2">Reset Password</CardTitle>
+                  <DialogDescription className="sr-only">
+                    {isSubmitted ? "Check your email for reset instructions" : "Enter your email to receive a password reset link"}
+                  </DialogDescription>
                   <CardDescription>
                     {isSubmitted ? "Check your email for reset instructions" : "Enter your email to receive a password reset link"}
                   </CardDescription>

@@ -26,6 +26,8 @@ import SignIn from "@/authentication/SignIn";
 import SignUp from "@/authentication/SignUp";
 import NotFound from "@/pages/NotFound";
 import { HelmetProvider } from "react-helmet-async";
+import ProtectedRoute from "@/components/extras/ProtectedRoute";
+import AuthCheck from "@/components/extras/AuthCheck";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +37,7 @@ const AppRouter = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000); // Show loader for 3 seconds
+    }, 2000); // Show loader for 2 seconds
 
     return () => clearTimeout(timer);
   }, []);
@@ -52,27 +54,117 @@ const AppRouter = () => {
           <Sonner />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Routes>
-              <Route path="/" element={<Onboarding />} />
+              {/* Root path - Auth check decides where to go */}
+              <Route path="/" element={<AuthCheck />} />
+
+              {/* Public routes */}
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/home" element={<Index />} />
-              <Route path="/candidate" element={<CandidateDashboard />} />
-              <Route path="/employer" element={<EmployerDashboard />} />
-              <Route path="/jobs" element={<JobSearch />} />
-              <Route path="/profile" element={<MyProfile />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/job-postings" element={<JobPostings />} />
-              <Route path="/candidates" element={<CandidateSearch />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/career-advice" element={<CareerAdvice />} />
-              <Route path="/skill-assessment" element={<SkillAssessment />} />
-              <Route path="/salary-insights" element={<SalaryInsights />} />
-              <Route path="/hiring-analytics" element={<HiringAnalytics />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+              {/* Protected routes - require authentication */}
+              <Route
+                path="/home"
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/candidate"
+                element={
+                  <ProtectedRoute>
+                    <CandidateDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/employer"
+                element={
+                  <ProtectedRoute>
+                    <EmployerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/jobs"
+                element={
+                  <ProtectedRoute>
+                    <JobSearch />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <MyProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/messages"
+                element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/job-postings"
+                element={
+                  <ProtectedRoute>
+                    <JobPostings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/candidates"
+                element={
+                  <ProtectedRoute>
+                    <CandidateSearch />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/career-advice"
+                element={
+                  <ProtectedRoute>
+                    <CareerAdvice />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/skill-assessment"
+                element={
+                  <ProtectedRoute>
+                    <SkillAssessment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/salary-insights"
+                element={
+                  <ProtectedRoute>
+                    <SalaryInsights />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/hiring-analytics"
+                element={
+                  <ProtectedRoute>
+                    <HiringAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
