@@ -20,8 +20,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   linkWithCredential,
-  fetchSignInMethodsForEmail,
-  EmailAuthProvider,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
